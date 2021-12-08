@@ -35,6 +35,11 @@ GAMEOVERCOLOR = RED #Цвет текста "Вы проиграли"
 GAMEOVERBGCOLOR = BLACK #Цвет заднего фона текста "Вы проиграли"
 SCORECOLOR = BROWN #Цвет текста очки игрока
 
+#Количество места по бокам доски до края окна
+#используется несколько раз, поэтому рассчитайте его здесь один раз и сохраните в переменных.
+XMARGIN = int((WINDOWWIDTH - GEMIMAGESIZE * BOARDWIDTH)/2)
+YMARGIN = int((WINDOWHEIGHT - GEMIMAGESIZE * BOARDHEIGHT)/2)
+
 #Констатны значение направлений
 UP = 'up'
 DOWN = 'down'
@@ -44,8 +49,103 @@ LEFT = 'left'
 EMPTY_SPACE = -1 #произвольное неположительное значение
 ROWABOVEBOARD = 'row above board' #произвольное, нецелое значение
 
-def main():
+def main(): #Главная функция
+	
+	global FPSCLOCK, DISPLAYSURF, GEMIMAGES, GAMESOUNDS, BASICFONT, BOARDRECTS
+	#Установка
+	pygame.init() #Инициализация
+	FPSCLOCK = pygame.time.Clock() #Счетчик
+	DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+	pygame.display.set_caption('GemGem')
+	BASICFONT = pygame.font.Font('freesansbold.ttf',36)
+
+	#Загрузка картинок
+	GEMIMAGES = []
+	for i in range(1, NUMGEMIMAGES + 1):
+		gemImage = pygame.image.load('gem%s.png' % i) #Загружаем картинки в примере gem1.png, gem2.png
+		if gemImage.get_size() != (GEMIMAGESIZE, GEMIMAGESIZE):
+			gemImage = pygame.transform.smoothscale(gemImage, GEMIMAGESIZE, GEMIMAGESIZE)
+		GEMIMAGES.append(gemImage)
+	
+	#Загрузка звуков
+	GAMESOUNDS = {}
+	GAMESOUNDS['bad_swap'] = pygame.mixer.sound('badswap.wav')
+	GAMESOUNDS['match'] = []
+	for i in range(NUMMATCHSOUNDS):
+		GAMESOUNDS['match'].append(pygame.mixer.Sound('match%s.wav' % i))
+	
+	#Создайте объекты pygame.Rect для каждого места на доске, чтобы
+	#преобразование координат платы в координаты пикселей.
+	BOARDRECTS = []
+	for x in range(BOARDWIDTH):
+		BOARDRECTS.append([])
+		for y in range(BOARDHEIGHT):
+			r = pygame.Rect(
+				(XMARGIN + (x * GEMIMAGESIZE),
+				 YMARGIN + (y * GEMIMAGESIZE),
+				 GEMIMAGESIZE,
+				 GEMIMAGESIZE)
+			)
+			BOARDRECTS[x].append(r)
+	
+	while True:
+		runGame()
+
+def runGame():
 	pass 
+
+def getSwappingGems():
+	pass 
+
+def getBlankBoard():
+	pass 
+
+def canMakeMove():
+	pass 
+
+def drawMovingGem():
+	pass 
+
+def pullDownAllGems():
+	pass 
+
+def getGemAt():
+	pass 
+
+def getDropSlots():
+	pass 
+
+def findMatchingGems():
+	pass 
+
+def highlightSpace():
+	pass 
+
+def getDroppingGems():
+	pass 
+
+def animateMovingGems():
+	pass 
+
+def moveGems():
+	pass 
+
+def fillBoardAndAnimate():
+	pass 
+
+def checkFormGemClick():
+	pass 
+
+def drawBoard():
+	pass 
+
+def getBoardCopyMinusGems():
+	pass 
+
+def drawScore():
+	pass 
+
+
 
 if __name__ == '__main__':
 	main()
