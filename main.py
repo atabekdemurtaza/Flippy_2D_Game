@@ -69,7 +69,7 @@ def main(): #Главная функция
 	
 	#Загрузка звуков
 	GAMESOUNDS = {}
-	GAMESOUNDS['bad_swap'] = pygame.mixer.sound('badswap.wav')
+	GAMESOUNDS['bad_swap'] = pygame.mixer.Sound('badswap.wav')
 	GAMESOUNDS['match'] = []
 	for i in range(NUMMATCHSOUNDS):
 		GAMESOUNDS['match'].append(pygame.mixer.Sound('match%s.wav' % i))
@@ -92,7 +92,65 @@ def main(): #Главная функция
 		runGame()
 
 def runGame():
-	pass 
+	#Можно играть как одиночную игру. Когда игрок проигрывает
+	#вернется этот функция 
+
+	#Установка границы
+	gameBoard = getBlankBoard()
+	score = 0
+	fillBoardAndAnimate(gameBoard, [], score) #Бросьте начальные драгоценные камни. 
+	
+	#Начальные переменные для старта новый игры
+	firstSelectedGem = None
+	lastMouseDownX = None 
+	lastMouseDownY = None 
+	gameIsOver = False 
+	lastScoreDeduction = time.time()
+	clickContinueTextSurf = None 
+
+	while True: #Главный цикл игры
+		clickedSpace = None 
+		for event in pygame.event.get(): #цикл обработки событий
+			if event.type == QUIT or (event.type==KEYUP and event.key==K_ESCAPE):
+				pygame.quit()
+				sys.exit()
+			elif event.type == KEYUP and event.key == K_BACKSPACE:
+				return #Новая игра
+			elif event.type == MOUSEBUTTONUP:
+				if gameIsOver:
+					return #После завершение игры, нажать на кнопку "Новая игра"
+				if event.pos == (lastMouseDownX, lastMouseDownY):
+					#Это событие является щелчком мыши, а не концом мыши
+					clickedSpace = checkFormGemClick(event.pos)
+				else:
+					#это конец перетаскивания мышью
+					firstSelectedGem = checkFormGemClick(lastMouseDownX, lastMouseDownY)
+					clickedSpace = checkFormGemClick(event.pos)
+					if not firstSelectedGem or not clickedSpace:
+						#если не является частью допустимого перетаскивания, отмените выбор обоих
+						firstSelectedGem = None 
+						clickedSpace = None 
+			elif event.type == MOUSEBUTTONDOWN:
+				#это начало кликание мышью или перетаскивание ею
+				lastMouseDownX, lastMouseDownY = event.pos
+		if clickedSpace and not firstSelectedGem:
+			#Это выбранное первый гем
+			firstSelectedGem = clickedSpace
+		elif clickedSpace and firstSelectedGem:
+			#Выбрано сразу два гема. Поменяем их местами
+			firstSwappingGem, secondSwappingGem = getSwappingGems(gameBoard, firstSelectedGem, clickedSpace)
+			if firstSwappingGem == None and secondSwappingGem == None:
+				#Если оба являются пустым, то гемы не будут прилагащими
+				firstSelectedGem = None #Не выбрали первый гем
+				continue 
+			#Показать анимацию в экран как гемы меняются с друг другом
+			boardCopy = getBoardCopyMinusGems(gameBoard, (firstSwappingGem, secondSwappingGem))
+			animateMovingGems(boardCopy, [firstSwappingGem, secondSwappingGem], [], score)
+
+			#Поменяйте гемы в их структуре
+			
+
+
 
 def getSwappingGems():
 	pass 
